@@ -324,11 +324,9 @@
                                 .then(response => response.json())
                                 .then(data => {
                                     const newTotalRequests = data.total_requests || 0;
-                                    const diff = newTotalRequests// - oldTotalRequests;
-                                    oldTotalRequests = newTotalRequests;
-
+                                    
                                     const x = (new Date()).getTime();
-                                    const y = diff;
+                                    const y = newTotalRequests;
                                     series.addPoint([x, y], true, series.data.length > 40);
                                 })
                                 .catch(error => {
@@ -445,7 +443,7 @@
                 }
 
                 let html = '';
-                leaderboardData.forEach((user, index) => {
+                data.forEach((user, index) => {
                     html += `
                         <div class="leaderboard-item">
                             <img src="${user.profile}" alt="${user.username}">
