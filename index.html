@@ -338,15 +338,16 @@
     <script>
         // Helper function to format numbers with K/M abbreviations
         function formatNumber(num) {
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B'; 
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M'; 
             } else if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
+                return (num / 1000).toFixed(1) + 'K'; 
             } else {
-                return num.toString();
+                return num.toString(); 
             }
         }
-
        
         const apiUrl = 'https://script.google.com/macros/s/AKfycbzaJtA7W8VyM4Jo-3b_atczZHAG59tqXv8pDqh9_lY2TyDTAq5Bj0nUuPD8ZMiVYHZD/exec'; 
 
