@@ -236,7 +236,7 @@
             font-family: 'Montserrat', sans-serif;
         }
         #join-leaderboard p {
-            font-size: 0.7rem;
+            font-size: 0.9rem;
             color: #ccc;
             font-family: 'Roboto', sans-serif;
         }
@@ -255,15 +255,115 @@
         header, main, #chart, #traffic-data, #leaderboard, #join-leaderboard {
             animation: fadeIn 0.8s ease-in-out;
         }
+        
+        /* Triotion Proxy Section */
+        #triotion-proxy {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        #triotion-proxy h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        #triotion-proxy p {
+            font-size: 1rem;
+            color: #ccc;
+            font-family: 'Roboto', sans-serif;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        #triotion-proxy li {
+            font-size: 1rem;
+            color: #ccc;
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+        .proxy-plans-container {
+            display: flex;
+            overflow-x: auto; /* Horizontal scrolling */
+            gap: 20px;
+            padding-bottom: 20px;
+            padding-top:15px;
+            scrollbar-width: none; /* Hide scrollbar for Firefox */
+            -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+        }
+        .proxy-plans-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar for Chrome/Safari */
+        }
+        .proxy-plan {
+            flex: 0 0 auto;
+            width: 250px; /* Fixed width for each plan */
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 13px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .proxy-plan:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        .proxy-plan h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #0072ff, #00c6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .proxy-plan p {
+            font-size: 1rem;
+            color: #ccc;
+            font-family: 'Lora', serif;
+        }
+        
+        .buy-now-button {
+            display: inline-block;
+            background: linear-gradient(90deg, #6a99ff, #4a76e6);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 1px solid #4a76e6;
+            border-radius: 17px;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(106, 153, 255, 0.3);
+        }
+        
+        .buy-now-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(106, 153, 255, 0.5);
+        }
+        
+        .buy-now-button a {
+            text-decoration: none;
+            color: inherit;
+        }
 
-        /* Responsive Design */
+
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        header, main, #traffic-data, #leaderboard, #join-leaderboard, #triotion-proxy {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        
+        /* General Responsive Design */
         @media (max-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-            header p {
-                font-size: 1rem;
-            }
+            
             #chart {
                 height: 300px;
             }
@@ -288,6 +388,57 @@
             }
             .leaderboard-item .profile-url {
                 font-size: 0.8rem;
+            }
+            
+            /* Header Adjustments */
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+        
+            /* HIT Section Adjustments */
+            .hit-section h1 {
+                font-size: 1.5rem;
+            }
+            .hit-section p {
+                font-size: 0.9rem;
+            }
+        
+            /* Proxy Plans Container Adjustments */
+            .proxy-plans-container {
+                gap: 10px; /* Reduce gap between plans */
+                padding-bottom: 10px; /* Reduce padding for smaller screens */
+            }
+            .proxy-plan {
+                width: 180px; /* Smaller width for mobile */
+                padding: 15px; /* Reduce padding for compact layout */
+            }
+            .proxy-plan h3 {
+                font-size: 1.2rem; /* Smaller font size for plan titles */
+            }
+            .proxy-plan p {
+                font-size: 0.9rem; /* Smaller font size for plan details */
+            }
+        
+            /* Buy Now Button Adjustments */
+            .buy-now-button {
+                font-size: 0.9rem; /* Smaller font size for buttons */
+                padding: 8px 16px; /* Reduce padding for compact buttons */
+            }
+        
+            /* Triotion Proxy Messages Adjustments */
+            #triotion-proxy h2 {
+                font-size: 1.5rem; /* Smaller font size for section heading */
+            }
+            #triotion-proxy p {
+                font-size: 0.9rem; /* Smaller font size for paragraphs */
+                line-height: 1.6; /* Adjust line height for better readability */
+            }
+            #triotion-proxy ul {
+                font-size: 0.9rem; /* Smaller font size for lists */
+                padding-left: 15px; /* Reduce padding for lists */
             }
         }
     </style>
@@ -332,6 +483,53 @@
                 <a href="https://t.me/cfproxy" target="_blank">Telegram group</a>.
             </p>
         </div>
+
+        <!-- Triotion Proxy Section -->
+        <div id="triotion-proxy">
+            <h2>Triotion Proxy</h2>
+            <p>Unlock the Power of Triotion Premium Proxy for Cyber Operations!</p>
+            <p>Are you looking for a reliable solution for bulk security scanning, web scraping, or data collection? Look no further! Triotion Premium Proxy offers the perfect blend of high-speed performance and low latency, designed specifically for your cyber needs.</p><br>
+            <h3><strong>Why Choose Triotion Proxy?</strong></h3>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Unlimited Bandwidth: Conduct extensive data operations without worrying about data caps or throttling.</li>
+                <li>Affordable Pricing: Get premium proxy services at competitive rates, making it cost-effective for businesses and developers.</li>
+                <li>High-Speed Connections: Experience lightning-fast speeds that enhance your scraping and scanning tasks, ensuring you get the data you need quickly.</li>
+                <li>Low Latency: Achieve real-time results with minimal delay, perfect for time-sensitive operations.</li>
+                <li>100% Anonymity: Protect your identity and maintain privacy while conducting sensitive cyber activities.</li>
+            </ul>
+            <h3><strong>Who Chooses Triotion Proxy?</strong></h3>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Cybersecurity Professionals: For bulk security scans and vulnerability assessments.</li>
+                <li>Data Analysts: For efficient web scraping and data collection.</li>
+                <li>Marketers: For competitive analysis and market research.</li>
+                <li>Developers: For testing applications and services in various environments.</li>
+            </ul>
+            <p>Join the ranks of satisfied users who trust Triotion Premium Proxy for their cyber operations. Get started today and take your data collection and security scanning to the next level!</p>
+            <h2><strong>PLANS</strong></h2>
+            <div class="proxy-plans-container">
+                <div class="proxy-plan">
+                    <h3>BASIC</h3>
+                    <p>$30 | 100 IPs | 1 Month | High Speed (HTTP, HTTPS, SOCKS4, SOCKS5)</p>
+                    <a href="https://Triotion.t.me" target="_blank" class="buy-now-button">Purchase Now</a>
+                </div>
+                <div class="proxy-plan">
+                    <h3>STANDARD</h3>
+                    <p>$60 | 250 IPs | 1 Month | High Speed (HTTP, HTTPS, SOCKS4, SOCKS5)</p>
+                    <a href="https://Triotion.t.me" target="_blank" class="buy-now-button">Purchase Now</a>
+                </div>
+                <div class="proxy-plan">
+                    <h3>PREMIUM</h3>
+                    <p>$250 | 1,000 IPs | 1 Month | High Speed (HTTP, HTTPS, SOCKS4, SOCKS5)</p>
+                    <a href="https://Triotion.t.me" target="_blank" class="buy-now-button">Purchase Now</a>
+                </div>
+                                <div class="proxy-plan">
+                    <h3>CUSTOM PLAN</h3>
+                    <p>Contact us for custom requirements<br><br></p>
+                    <a href="https://Triotion.t.me" target="_blank" class="buy-now-button">    Contact Now    </a>
+                </div>
+            </div>
+        </div>
+        
     </main>
 
     <!-- JavaScript -->
