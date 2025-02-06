@@ -407,12 +407,12 @@
                 });
         
                 socket.addEventListener('message', (event) => {
-                  console.log('WebSocket message received:', event.data);
+                  //console.log('WebSocket message received:', event.data);
                   const data = JSON.parse(event.data);
                   if (data.error) {
-                    console.error('WebSocket error:', data.error);
-                    trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
-                    retryWebSocket(); // Retry WebSocket connection
+                    //console.error('WebSocket error:', data.error);
+                    //trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
+                    //retryWebSocket(); 
                     return;
                   }
         
@@ -423,14 +423,14 @@
         
                 socket.addEventListener('error', (error) => {
                   console.error('WebSocket error:', error);
-                  trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
-                  retryWebSocket(); // Retry WebSocket connection
+                  //trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
+                  //retryWebSocket(); 
                 });
         
                 socket.addEventListener('close', () => {
-                  console.log('WebSocket connection closed. Retrying WebSocket...');
-                  trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
-                  retryWebSocket(); // Retry WebSocket connection
+                  //console.log('WebSocket connection closed. Retrying WebSocket...');
+                  //trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
+                  //retryWebSocket(); // Retry WebSocket connection
                 });
               },
             },
@@ -505,8 +505,8 @@
         
         function retryWebSocket() {
           retryTimeout = setTimeout(() => {
-            console.log('Retrying WebSocket connection...');
-            connectWebSocket();
+            //console.log('Retrying WebSocket connection...');
+            //connectWebSocket();
           }, retryDelay);
         }
         
@@ -523,9 +523,9 @@
             console.log('WebSocket message received:', event.data);
             const data = JSON.parse(event.data);
             if (data.error) {
-              console.error('WebSocket error:', data.error);
-              trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
-              retryWebSocket(); // Retry WebSocket connection
+              //console.error('WebSocket error:', data.error);
+              //trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
+              //retryWebSocket(); // Retry WebSocket connection
               return;
             }
         
@@ -535,15 +535,15 @@
           });
         
           socket.addEventListener('error', (error) => {
-            console.error('WebSocket error:', error);
-            trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
-            retryWebSocket(); // Retry WebSocket connection
+            //console.error('WebSocket error:', error);
+            //trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
+            //retryWebSocket(); 
           });
         
           socket.addEventListener('close', () => {
-            console.log('WebSocket connection closed. Retrying WebSocket...');
-            trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
-            retryWebSocket(); // Retry WebSocket connection
+            //console.log('WebSocket connection closed. Retrying WebSocket...');
+            //trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
+            //retryWebSocket(); // Retry WebSocket connection
           });
         }
         
