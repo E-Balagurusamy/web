@@ -351,9 +351,11 @@
 
 
         const websocketUrl = 'wss://api.up.triotion.xyz/stats/we'; // WebSocket endpoint
+        const leaderboardUrl = 'https://up.triotion.xyz/leaderboard.json'; // Leaderboard endpoint
         
-        // DOM element for displaying traffic data
+        // DOM elements for displaying traffic and leaderboard data
         const trafficDiv = document.getElementById('traffic-data');
+        const leaderboardList = document.getElementById('leaderboard-list');
         
         // Function to render traffic data
         function renderTrafficData(data) {
@@ -378,133 +380,128 @@
           html += '</div>';
           trafficDiv.innerHTML = html;
         }
-    
-        const leaderboardUrl = 'https://up.triotion.xyz/leaderboard.json'; 
-
-        let oldTotalRequests = 0;
-
+        
         // Initialize chart
         let chart = Highcharts.chart('chart', {
-            chart: {
-                type: 'spline', // Use spline for smooth curves
-                zoomType: 'x',
-                backgroundColor: 'transparent',
-                events: {
-                    load: function () {
-                        let series = this.series[0];
-                
-                        // Function to add a new data point to the chart
-                        function addDataPoint(newTotalRequests) {
-                          const x = (new Date()).getTime(); // Current timestamp
-                          const y = newTotalRequests; // Total requests value
-                          series.addPoint([x, y], true, series.data.length > 40); // Add point and remove old points if necessary
-                        }
-                
-                        // Establish WebSocket connection
-                        const socket = new WebSocket(websocketUrl);
-                
-                        // Handle WebSocket events
-                        socket.addEventListener('open', () => {
-                          console.log('WebSocket connection established');
-                        });
-                
-                        socket.addEventListener('message', (event) => {
-                          const data = JSON.parse(event.data);
-                          if (data.error) {
-                            console.error('WebSocket error:', data.error);
-                            trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
-                            retryWebSocket(); // Retry WebSocket connection
-                            return;
-                          }
-                
-                          // Render traffic data and update the chart
-                          renderTrafficData(data);
-                          addDataPoint(data.total_requests);
-                        });
-                
-                        socket.addEventListener('error', (error) => {
-                          console.error('WebSocket error:', error);
-                          trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
-                          retryWebSocket(); // Retry WebSocket connection
-                        });
-                
-                        socket.addEventListener('close', () => {
-                          console.log('WebSocket connection closed. Retrying WebSocket...');
-                          trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
-                          retryWebSocket(); // Retry WebSocket connection
-                        });
-                      },
-                    },
-                }
-            },
-            title: {
-                text: 'Live Cloudflare Traffic Requests',
-                style: {
-                    color: '#ffffff',
-                    fontFamily: 'Montserrat, sans-serif',
-                    fontSize: '1.5rem'
-                }
-            },
-            xAxis: {
-                type: 'datetime',
-                title: {
-                    text: 'Time',
-                    style: {
-                        color: '#ccc'
-                    }
-                },
-                labels: {
-                    style: {
-                        color: '#ccc'
-                    }
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Requests Difference',
-                    style: {
-                        color: '#ccc'
-                    }
-                },
-                labels: {
-                    formatter: function () {
-                        return formatNumber(this.value);
-                    },
-                    style: {
-                        color: '#ccc'
-                    }
-                }
-            },
-            tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                style: {
-                    color: '#fff'
-                },
-                formatter: function () {
-                    return `<b>${formatNumber(this.y)}</b> requests difference at ${Highcharts.dateFormat('%H:%M:%S', this.x)}`;
-                }
-            },
-            plotOptions: {
-                spline: {
-                    marker: {
-                        fillColor: '#6a99ff',
-                        lineWidth: 2,
-                        lineColor: '#6a99ff'
-                    }
-                }
-            },
-            series: [{
-                name: 'Requests Difference',
-                data: [],
-                color: '#6a99ff',
-                lineWidth: 2
-            }]
-        });
+          chart: {
+            type: 'spline',
+            zoomType: 'x',
+            backgroundColor: 'transparent',
+            events: {
+              load: function () {
+                let series = this.series[0];
         
+                // Function to add a new data point to the chart
+                function addDataPoint(newTotalRequests) {
+                  const x = (new Date()).getTime(); // Current timestamp
+                  const y = newTotalRequests; // Total requests value
+                  series.addPoint([x, y], true, series.data.length > 40); // Add point and remove old points if necessary
+                }
+        
+                // Establish WebSocket connection
+                const socket = new WebSocket(websocketUrl);
+        
+                // Handle WebSocket events
+                socket.addEventListener('open', () => {
+                  console.log('WebSocket connection established');
+                });
+        
+                socket.addEventListener('message', (event) => {
+                  console.log('WebSocket message received:', event.data);
+                  const data = JSON.parse(event.data);
+                  if (data.error) {
+                    console.error('WebSocket error:', data.error);
+                    trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
+                    retryWebSocket(); // Retry WebSocket connection
+                    return;
+                  }
+        
+                  // Render traffic data and update the chart
+                  renderTrafficData(data);
+                  addDataPoint(data.total_requests);
+                });
+        
+                socket.addEventListener('error', (error) => {
+                  console.error('WebSocket error:', error);
+                  trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
+                  retryWebSocket(); // Retry WebSocket connection
+                });
+        
+                socket.addEventListener('close', () => {
+                  console.log('WebSocket connection closed. Retrying WebSocket...');
+                  trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
+                  retryWebSocket(); // Retry WebSocket connection
+                });
+              },
+            },
+          },
+          title: {
+            text: 'Live Cloudflare Traffic Requests',
+            style: {
+              color: '#ffffff',
+              fontFamily: 'Montserrat, sans-serif',
+              fontSize: '1.5rem',
+            },
+          },
+          xAxis: {
+            type: 'datetime',
+            title: {
+              text: 'Time',
+              style: {
+                color: '#ccc',
+              },
+            },
+            labels: {
+              style: {
+                color: '#ccc',
+              },
+            },
+          },
+          yAxis: {
+            title: {
+              text: 'Requests Difference',
+              style: {
+                color: '#ccc',
+              },
+            },
+            labels: {
+              formatter: function () {
+                return formatNumber(this.value);
+              },
+              style: {
+                color: '#ccc',
+              },
+            },
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            style: {
+              color: '#fff',
+            },
+            formatter: function () {
+              return `<b>${formatNumber(this.y)}</b> requests difference at ${Highcharts.dateFormat('%H:%M:%S', this.x)}`;
+            },
+          },
+          plotOptions: {
+            spline: {
+              marker: {
+                fillColor: '#6a99ff',
+                lineWidth: 2,
+                lineColor: '#6a99ff',
+              },
+            },
+          },
+          series: [{
+            name: 'Requests Difference',
+            data: [],
+            color: '#6a99ff',
+            lineWidth: 2,
+          }],
+        });
         
         // Function to retry WebSocket connection
         let retryTimeout;
-        const retryDelay = 5000; // Retry WebSocket connection after 5 seconds
+        const retryDelay = 4000; 
         
         function retryWebSocket() {
           retryTimeout = setTimeout(() => {
@@ -523,6 +520,7 @@
           });
         
           socket.addEventListener('message', (event) => {
+            console.log('WebSocket message received:', event.data);
             const data = JSON.parse(event.data);
             if (data.error) {
               console.error('WebSocket error:', data.error);
@@ -548,6 +546,35 @@
             retryWebSocket(); // Retry WebSocket connection
           });
         }
+        
+        // Fetch leaderboard data
+        fetch(leaderboardUrl)
+          .then(response => response.json())
+          .then(data => {
+            if (!Array.isArray(data) || data.length === 0) {
+              leaderboardList.innerHTML = '<p>No leaderboard data available.</p>';
+              return;
+            }
+        
+            let html = '';
+            data.forEach((user, index) => {
+              html += `
+                <div class="leaderboard-item">
+                  <img src="${user.profile}" alt="${user.username}">
+                  <div class="info">
+                    <h4>${user.username}</h4>
+                    <p>${formatNumber(user.count)} requests</p>
+                  </div>
+                  <a href="${user.url}" target="_blank" class="profile-url">View Profile</a>
+                </div>
+              `;
+            });
+            leaderboardList.innerHTML = html;
+          })
+          .catch(error => {
+            console.error('Error fetching leaderboard data:', error);
+            leaderboardList.innerHTML = '<p>Error loading leaderboard data. Please try again later.</p>';
+          });
         
         // Initial attempt to connect via WebSocket
         connectWebSocket();
