@@ -348,7 +348,36 @@
                 return num.toString(); 
             }
         }
-       
+
+
+        const websocketUrl = 'wss://api.up.triotion.xyz/stats/we'; // WebSocket endpoint
+        
+        // DOM element for displaying traffic data
+        const trafficDiv = document.getElementById('traffic-data');
+        
+        // Function to render traffic data
+        function renderTrafficData(data) {
+          if (!data || data.total_requests === 0) {
+            trafficDiv.innerHTML = '<p>No data available.</p>';
+            return;
+          }
+        
+          // Total Requests
+          let html = `<h3>Total Requests in Last Hour: ${formatNumber(data.total_requests)}</h3>`;
+          
+          // Status Code Grid
+          html += '<div class="status-code-grid">';
+          for (const [statusCode, count] of Object.entries(data.status_code_requests)) {
+            html += `
+              <div class="status-code-block">
+                <h4>Status Code ${statusCode}</h4>
+                <p>${formatNumber(count)} requests</p>
+              </div>
+            `;
+          }
+          html += '</div>';
+          trafficDiv.innerHTML = html;
+        }
     
         const leaderboardUrl = 'https://up.triotion.xyz/leaderboard.json'; 
 
@@ -363,21 +392,49 @@
                 events: {
                     load: function () {
                         let series = this.series[0];
-                        setInterval(function () {
-                            fetch(apiUrl)
-                                .then(response => response.json())
-                                .then(data => {
-                                    const newTotalRequests = data.total_requests || 0;
-                                    
-                                    const x = (new Date()).getTime();
-                                    const y = newTotalRequests;
-                                    series.addPoint([x, y], true, series.data.length > 40);
-                                })
-                                .catch(error => {
-                                    console.error('Error fetching data:', error);
-                                });
-                        }, 1000);
-                    }
+                
+                        // Function to add a new data point to the chart
+                        function addDataPoint(newTotalRequests) {
+                          const x = (new Date()).getTime(); // Current timestamp
+                          const y = newTotalRequests; // Total requests value
+                          series.addPoint([x, y], true, series.data.length > 40); // Add point and remove old points if necessary
+                        }
+                
+                        // Establish WebSocket connection
+                        const socket = new WebSocket(websocketUrl);
+                
+                        // Handle WebSocket events
+                        socket.addEventListener('open', () => {
+                          console.log('WebSocket connection established');
+                        });
+                
+                        socket.addEventListener('message', (event) => {
+                          const data = JSON.parse(event.data);
+                          if (data.error) {
+                            console.error('WebSocket error:', data.error);
+                            trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
+                            retryWebSocket(); // Retry WebSocket connection
+                            return;
+                          }
+                
+                          // Render traffic data and update the chart
+                          renderTrafficData(data);
+                          addDataPoint(data.total_requests);
+                        });
+                
+                        socket.addEventListener('error', (error) => {
+                          console.error('WebSocket error:', error);
+                          trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
+                          retryWebSocket(); // Retry WebSocket connection
+                        });
+                
+                        socket.addEventListener('close', () => {
+                          console.log('WebSocket connection closed. Retrying WebSocket...');
+                          trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
+                          retryWebSocket(); // Retry WebSocket connection
+                        });
+                      },
+                    },
                 }
             },
             title: {
@@ -443,59 +500,22 @@
                 lineWidth: 2
             }]
         });
-
-       
-        const websocketUrl = 'wss://api.up.triotion.xyz/stats/we'; // WebSocket endpoint
-        const apiUrl = 'https://api.up.triotion.xyz/stats'; // Fallback HTTP endpoint
         
-        // DOM element for displaying traffic data
-        const trafficDiv = document.getElementById('traffic-data');
         
-        // Function to render traffic data
-        function renderTrafficData(data) {
-          if (data.total_requests === 0) {
-            trafficDiv.innerHTML = '<p>No data available.</p>';
-            return;
-          }
+        // Function to retry WebSocket connection
+        let retryTimeout;
+        const retryDelay = 5000; // Retry WebSocket connection after 5 seconds
         
-          // Total Requests
-          let html = `<h3>Total Requests in Last Hour: ${formatNumber(data.total_requests)}</h3>`;
-          
-          // Status Code Grid
-          html += '<div class="status-code-grid">';
-          for (const [statusCode, count] of Object.entries(data.status_code_requests)) {
-            html += `
-              <div class="status-code-block">
-                <h4>Status Code ${statusCode}</h4>
-                <p>${formatNumber(count)} requests</p>
-              </div>
-            `;
-          }
-          html += '</div>';
-          trafficDiv.innerHTML = html;
-        }
-        
-        // Function to fetch data via HTTP
-        async function fetchDataViaHttp() {
-          try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-            renderTrafficData(data); // Render the data fetched via HTTP
-            return data;
-          } catch (error) {
-            console.error('Error fetching data via HTTP:', error);
-            trafficDiv.innerHTML = '<p>Error loading data via HTTP. Retrying WebSocket...</p>';
-            return null;
-          }
+        function retryWebSocket() {
+          retryTimeout = setTimeout(() => {
+            console.log('Retrying WebSocket connection...');
+            connectWebSocket();
+          }, retryDelay);
         }
         
         // Function to establish WebSocket connection
-        let socket;
-        let retryTimeout;
-        const retryDelay = 4000; 
-        
         function connectWebSocket() {
-          socket = new WebSocket(websocketUrl);
+          const socket = new WebSocket(websocketUrl);
         
           socket.addEventListener('open', () => {
             console.log('WebSocket connection established');
@@ -506,45 +526,27 @@
             const data = JSON.parse(event.data);
             if (data.error) {
               console.error('WebSocket error:', data.error);
-              trafficDiv.innerHTML = `<p>Error: ${data.error}. Switching to HTTP...</p>`;
-              switchToHttp(); // Switch to HTTP if there's an error in WebSocket data
+              trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
+              retryWebSocket(); // Retry WebSocket connection
               return;
             }
-            renderTrafficData(data); // Update the UI with new data
+        
+            // Render traffic data and update the chart
+            renderTrafficData(data);
+            chart.series[0].addPoint([(new Date()).getTime(), data.total_requests], true, chart.series[0].data.length > 40);
           });
         
           socket.addEventListener('error', (error) => {
             console.error('WebSocket error:', error);
-            trafficDiv.innerHTML = '<p>WebSocket connection failed. Switching to HTTP...</p>';
-            switchToHttp(); // Switch to HTTP on WebSocket error
+            trafficDiv.innerHTML = '<p>WebSocket connection failed. Retrying WebSocket...</p>';
+            retryWebSocket(); // Retry WebSocket connection
           });
         
           socket.addEventListener('close', () => {
             console.log('WebSocket connection closed. Retrying WebSocket...');
             trafficDiv.innerHTML = '<p>WebSocket connection closed. Retrying WebSocket...</p>';
-            retryWebSocket(); // Retry WebSocket connection after a delay
+            retryWebSocket(); // Retry WebSocket connection
           });
-        }
-        
-        // Function to switch to HTTP fallback
-        function switchToHttp() {
-          fetchDataViaHttp().then((data) => {
-            if (data) {
-              // If HTTP fetch succeeds, retry WebSocket after a delay
-              retryTimeout = setTimeout(() => {
-                console.log('Retrying WebSocket connection...');
-                connectWebSocket();
-              }, retryDelay);
-            }
-          });
-        }
-        
-        // Function to retry WebSocket connection
-        function retryWebSocket() {
-          retryTimeout = setTimeout(() => {
-            console.log('Retrying WebSocket connection...');
-            connectWebSocket();
-          }, retryDelay);
         }
         
         // Initial attempt to connect via WebSocket
