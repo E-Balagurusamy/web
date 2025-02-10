@@ -480,7 +480,7 @@
             <p>
                 Hit <a href="https://up.triotion.xyz?=username" target="_blank">https://up.triotion.xyz?=username</a> 
                 and send a screenshot of your <strong>dstat</strong> in the 
-                <a href="https://t.me/cfproxy" target="_blank">Telegram group</a>.
+                <a href="https://t.me/cfproxy" target="_blank">Telegram group. (Join Now)</a>.
             </p>
         </div>
 
@@ -548,7 +548,7 @@
         }
 
 
-        const websocketUrl = 'wss://api.up.triotion.xyz/stats/we'; // WebSocket endpoint
+        const websocketUrl = 'wss://api.down.triotion.xyz/stats/we'; // WebSocket endpoint
         const leaderboardUrl = 'https://up.triotion.xyz/leaderboard.json'; // Leaderboard endpoint
         
         // DOM elements for displaying traffic and leaderboard data
@@ -598,16 +598,28 @@
         
                 // Establish WebSocket connection
                 const socket = new WebSocket(websocketUrl);
+
+                
         
                 // Handle WebSocket events
+                let heartbeatInterval; 
                 socket.addEventListener('open', () => {
-                  console.log('WebSocket connection established');
+                    console.log('WebSocket connection established');
+                    clearTimeout(retryTimeout); 
+
+                
+                    heartbeatInterval = setInterval(() => {
+                    if (socket.readyState === WebSocket.OPEN) {
+                        socket.send(JSON.stringify({ type: 'heartbeat' }));
+                    }
+                    }, 80000); 
                 });
         
                 socket.addEventListener('message', (event) => {
                   //console.log('WebSocket message received:', event.data);
                   const data = JSON.parse(event.data);
                   if (data.error) {
+                    clearInterval(heartbeatInterval); 
                     //console.error('WebSocket error:', data.error);
                     //trafficDiv.innerHTML = `<p>Error: ${data.error}. Retrying WebSocket...</p>`;
                     //retryWebSocket(); 
