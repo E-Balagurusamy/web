@@ -604,15 +604,10 @@
                 // Handle WebSocket events
                 let heartbeatInterval; 
                 socket.addEventListener('open', () => {
-                    console.log('WebSocket connection established');
-                    clearTimeout(retryTimeout); 
-
-                
-                    heartbeatInterval = setInterval(() => {
-                    if (socket.readyState === WebSocket.OPEN) {
-                        socket.send(JSON.stringify({ type: 'heartbeat' }));
-                    }
-                    }, 80000); 
+                    alive = setInterval(() => {
+                        console.log('Refreshing the website...');
+                        window.location.reload(); 
+                    }, 90000); 
                 });
         
                 socket.addEventListener('message', (event) => {
